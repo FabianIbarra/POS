@@ -8,7 +8,7 @@ namespace POS.Models
     /// </summary>
     public class Categoria
     {
-        public string IdCategoria { get; set; }
-        public string Nombre { get; set; }
+        public string? IdCategoria { get; set; }
+        public string? Nombre { get; set; }
     }
 }

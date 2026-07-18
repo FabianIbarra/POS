@@ -8,10 +8,10 @@ namespace POS.Models
     /// </summary>
     public class Usuario
     {
-        public string IdUsuario { get; set; }
-        public string Username { get; set; }
-        public string PasswordHash { get; set; }
-        public string NombreCompleto { get; set; }
-        public string Rol { get; set; }
+        public string? IdUsuario { get; set; }
+        public string? Username { get; set; }
+        public string? PasswordHash { get; set; }
+        public string? NombreCompleto { get; set; }
+        public string? Rol { get; set; }
     }
 }

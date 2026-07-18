@@ -10,7 +10,7 @@ namespace POS.Data.Repositories
     /// </summary>
     public class CategoriaRepository
     {
-        private readonly string _connectionString = "Data Source=pos.db";
+        private readonly string _connectionString = "Data Source=POS.db";
 
         /// <summary>
         /// Inserta una nueva categoría en la base de datos de SQLite.

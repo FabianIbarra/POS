@@ -8,9 +8,9 @@ namespace POS.Models
     /// </summary>
     public class DetalleVenta
     {
-        public string IdDetalle { get; set; }
-        public string IdVenta { get; set; }
-        public string IdProducto { get; set; }
+        public string? IdDetalle { get; set; }
+        public string? IdVenta { get; set; }
+        public string? IdProducto { get; set; }
         public decimal Cantidad { get; set; }
         public decimal PrecioUnitario { get; set; }
         public decimal Subtotal { get; set; }

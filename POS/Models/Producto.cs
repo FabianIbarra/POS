@@ -8,13 +8,13 @@ namespace POS.Models
     /// </summary>
     public class Producto
     {
-        public string IdProducto { get; set; }
-        public string CodigoBarras { get; set; }
-        public string Descripcion { get; set; }
+        public string? IdProducto { get; set; }
+        public string? CodigoBarras { get; set; }
+        public string? Descripcion { get; set; }
         public decimal PrecioCompra { get; set; }
         public decimal PrecioVenta { get; set; }
         public decimal Stock { get; set; }
         public int Disponible { get; set; } = 1;
-        public string IdCategoria { get; set; }
+        public string? IdCategoria { get; set; }
     }
 }

@@ -8,11 +8,11 @@ namespace POS.Models
     /// </summary>
     public class Venta
     {
-        public string IdVenta { get; set; }
+        public string? IdVenta { get; set; }
         public int Folio { get; set; }
-        public string FechaHora { get; set; }
+        public string? FechaHora { get; set; }
         public decimal Total { get; set; }
-        public string MetodoPago { get; set; }
-        public string IdUsuario { get; set; }
+        public string? MetodoPago { get; set; }
+        public string? IdUsuario { get; set; }
     }
 }
