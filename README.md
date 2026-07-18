@@ -5,24 +5,24 @@ Este sistema está diseñado para agilizar el proceso de cobro, administrar el i
 
 ## Estado del Proyecto
 
-### Fases Completadas
-- ✅ **Fase 1: Arquitectura Base y Capa de Datos** - Completada
+### Implementaciones Completadas
+- ✅ **Arquitectura Base y Capa de Datos** - Completada
   - Estructura de carpetas establecida
   - Modelos anémicos creados (Categoría, Producto, Usuario, Venta, DetalleVenta)
   - Repositorios base implementados con Dapper
   - Repositorio transaccional de ventas con soporte para rollback
   
-- ✅ **Fase 2: Servicios Base y Autenticación** - Completada
+- ✅ **Servicios Base y Autenticación** - Completada
   - TimeService implementado para zona MST
   - AuthService con validación BCrypt
   - LoginViewModel con CommunityToolkit.Mvvm
   - LoginView.xaml con UX responsiva
   - Pruebas unitarias validadas
 
-### Fases Pendientes
-- 🔄 **Fase 3: Módulo de Inventario y Catálogos**
-- 🔄 **Fase 4: Módulo de Punto de Venta (Caja)**
-- 🔄 **Fase 5: Reportes, Historial y Cierre de Caja**
+### Implementaciones Pendientes
+- 🔄 **Módulo de Inventario y Catálogos**
+- 🔄 **Módulo de Punto de Venta (Caja)**
+- 🔄 **Reportes, Historial y Cierre de Caja**
 
 ## Arquitectura
 
@@ -47,7 +47,6 @@ POS/
  ├── Helpers/          # Convertidores o herramientas utilitarias 
  ├── App.xaml          # Punto de entrada de la aplicación
  ├── pos.db            # Archivo de base de datos
- └── PRUEBAS_TAREA_2_3.md # Documentación de pruebas
 ```
 
 ## Guía de Uso Rápido e Instalación
@@ -72,9 +71,3 @@ POS/
 3. **Inventario:** Permite el CRUD de los productos y sus respectivas categorías, y valida el margen de ganancias de manera estricta.
 
 > **Nota para Desarrolladores:** Siempre asegúrate de utilizar el servicio de inyección para autenticación (`AuthService`) y de obtener la hora a través de `TimeService` (America/Mazatlan). No uses `DateTime.Now` directamente en los Repositorios de datos.
-
-## Documentación de Pruebas
-
-Para ver el detalle de las pruebas unitarias de la **Tarea 2.3** (LoginViewModel y LoginView), consulta el archivo [`PRUEBAS_TAREA_2_3.md`](POS/PRUEBAS_TAREA_2_3.md).
-
-**Resumen de Pruebas:** 7/7 pruebas aprobadas ✅
