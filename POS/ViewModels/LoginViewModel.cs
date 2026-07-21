@@ -26,6 +26,9 @@ namespace POS.ViewModels
         [ObservableProperty]
         private bool isLoading = false;
 
+        [ObservableProperty]
+        private string mensajeEstado = "Autenticando...";
+
         /// <summary>
         /// Evento que se dispara cuando el login es exitoso.
         /// Las vistas pueden suscribirse para navegar a la pantalla principal.
@@ -47,12 +50,10 @@ namespace POS.ViewModels
         /// Valida las credenciales y guarda la sesión en memoria.
         /// </summary>
         [RelayCommand]
-        public void Autenticar()
+        public async Task Autenticar() // Ahora es 'async Task' en lugar de 'void'
         {
-            // Limpiar mensajes previos
             MensajeError = string.Empty;
 
-            // Validar que los campos no estén vacíos
             if (string.IsNullOrWhiteSpace(Username))
             {
                 MensajeError = "Por favor, ingresa el nombre de usuario.";
@@ -67,27 +68,31 @@ namespace POS.ViewModels
                 return;
             }
 
-            // Mostrar indicador de carga
+            // Restablecemos el mensaje por defecto y mostramos la barra
+            MensajeEstado = "Autenticando...";
             IsLoading = true;
 
             try
             {
-                // Intentar autenticación
-                bool esValido = _authService.IniciarSesion(Username, Password);
+                // Usamos Task.Run para no bloquear la interfaz mientras consulta la BD (aunque SQLite es muy rápido)
+                bool esValido = await Task.Run(() => _authService.IniciarSesion(Username, Password));
 
                 if (esValido)
                 {
-                    // Autenticación exitosa
-                    MensajeError = string.Empty;
-                    Password = string.Empty; // Limpiar contraseña por seguridad
+                    // ¡Éxito! Cambiamos el texto para darle retroalimentación visual al usuario
+                    MensajeEstado = "¡Ingreso exitoso! Abriendo caja...";
+
+                    // Hacemos una pausa de 800 milisegundos para que el usuario alcance a leer el mensaje
+                    await Task.Delay(800);
+
+                    Password = string.Empty;
                     LoginExitoso?.Invoke(this, EventArgs.Empty);
                 }
                 else
                 {
-                    // Autenticación fallida
                     MensajeError = "Usuario o contraseña incorrectos.";
                     LoginFallido?.Invoke(this, MensajeError);
-                    Password = string.Empty; // Limpiar contraseña por seguridad
+                    Password = string.Empty;
                 }
             }
             catch (Exception ex)
@@ -98,7 +103,11 @@ namespace POS.ViewModels
             }
             finally
             {
-                IsLoading = false;
+                // Solo ocultamos la barra si falló. Si tuvo éxito, la ventana ya se estará cerrando.
+                if (MensajeError != string.Empty)
+                {
+                    IsLoading = false;
+                }
             }
         }
 

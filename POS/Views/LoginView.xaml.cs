@@ -56,17 +56,14 @@ namespace POS.Views
 
         private void ViewModel_LoginExitoso(object sender, System.EventArgs e)
         {
-            MessageBox.Show("¡Bienvenido al sistema!", "Login Exitoso", MessageBoxButton.OK, MessageBoxImage.Information);
+            // 1. Instanciamos la ventana principal (Punto de Venta)
+            var posView = new POSView();
 
-            // Limpiar los campos después del éxito
-            UsernameTextBox.Clear();
-            PasswordBox.Clear();
-            PasswordVisibleBox.Clear();
+            // 2. La mostramos en pantalla
+            posView.Show();
 
-            // Restablecer la vista del ojito a su estado original
-            PasswordVisibleBox.Visibility = Visibility.Collapsed;
-            PasswordBox.Visibility = Visibility.Visible;
-            BtnMostrarContrasena.Content = "👁";
+            // 3. Cerramos la ventana actual de Login para que no quede abierta en segundo plano
+            this.Close();
         }
 
         private void ViewModel_LoginFallido(object sender, string mensaje)

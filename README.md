@@ -1,73 +1,124 @@
 # Sistema POS (Punto de Venta)
 
-Sistema de Punto de Venta (POS) de escritorio para tiendas minoristas, desarrollado con C# (WPF, .NET 8) y SQLite.
-Este sistema está diseñado para agilizar el proceso de cobro, administrar el inventario, gestionar usuarios y generar reportes básicos de ventas, manteniendo siempre un registro horario preciso basado en la zona horaria geolocalizada (MST - Mazatlán/Sinaloa).
+Sistema de Punto de Venta (POS) de escritorio para tiendas minoristas. Este sistema está diseñado para agilizar el proceso de cobro mediante una interfaz rápida, administrar el inventario, gestionar usuarios y generar reportes básicos de ventas. El sistema mantiene siempre un registro horario preciso basado en la zona horaria geolocalizada de Mazatlán/Sinaloa (MST - Mountain Standard Time).
 
-## Estado del Proyecto
+## 📊 Estado del Proyecto
 
-### Implementaciones Completadas
-- ✅ **Arquitectura Base y Capa de Datos** - Completada
-  - Estructura de carpetas establecida
-  - Modelos anémicos creados (Categoría, Producto, Usuario, Venta, DetalleVenta)
-  - Repositorios base implementados con Dapper
-  - Repositorio transaccional de ventas con soporte para rollback
-  
-- ✅ **Servicios Base y Autenticación** - Completada
-  - TimeService implementado para zona MST
-  - AuthService con validación BCrypt
-  - LoginViewModel con CommunityToolkit.Mvvm
-  - LoginView.xaml con UX responsiva
-  - Pruebas unitarias validadas
+Actualmente, el proyecto se encuentra a la **mitad de la Fase 5** del plan de implementación.
 
-### Implementaciones Pendientes
-- 🔄 **Módulo de Inventario y Catálogos**
-- 🔄 **Módulo de Punto de Venta (Caja)**
-- 🔄 **Reportes, Historial y Cierre de Caja**
+### ✅ Implementaciones Completadas
+*   **Arquitectura Base y Capa de Datos:** Estructura de carpetas establecida, modelos de dominio anémicos creados, repositorios base con Dapper implementados (con soporte para "Soft Delete") y repositorio transaccional configurado.
+*   **Servicios Base y Autenticación:** `TimeService` implementado para forzar la hora MST, `AuthService` (junto con su interfaz `IAuthService`) con validación de contraseñas mediante BCrypt, y `LoginViewModel` configurado.
+*   **Enrutamiento y Navegación Principal:** Contenedor principal desarrollado con control de accesos por rol (Cajero vs Administrador) y menú lateral dinámico mediante *DataBinding*.
+*   **Módulo de Inventario y Catálogos:** CRUD de productos (`InventarioViewModel` e `InventarioView.xaml` creados) implementado con validación de margen de ganancias (`precio_venta` > `precio_compra`) y buscador interactivo por código de barras o nombre.
 
-## Arquitectura
+### 🔄 Implementaciones en Progreso
+*   **Módulo de Punto de Venta (Caja) - [En curso - 50%]**
+    *   ✅ *Completado:* Vistas base y ViewModels creados (`POSViewModel.cs`, `POSView.xaml`). Carrito de compras (`ObservableCollection`), cálculo en tiempo real de Subtotal (sin IVA), IVA y Total, edición dinámica de cantidades y eliminación de renglones.
+    *   ✅ *Completado:* UX/UI base del DataGrid (solo columna "Cantidad" editable) y mantenimiento del foco en el buscador.
+    *   ⏳ *Pendiente:* Implementación de atajos de teclado extendidos (`F1`, `F5`, `+`, `-`, `Enter`).
+    *   ⏳ *Pendiente:* Modal de cobro, cálculo de cambio, manejo de stock en negativo y procesamiento de la transacción final.
 
-El proyecto sigue una arquitectura **MVVM (Model-View-ViewModel) Estricta**, lo que significa que el _code-behind_ de las vistas (`.xaml.cs`) está libre de lógica de negocio y acceso a datos.
+### ⏳ Implementaciones Pendientes
+*   **Reportes y Cierre de Caja:** Consultas de datos históricos por fechas/folio, y vista de reportes (`ReportesView.xaml`) con ingresos totales del día.
 
-*   **UI:** Windows Presentation Foundation (WPF) usando DataBindings.
-*   **Lógica de Presentación:** Librería `CommunityToolkit.Mvvm`.
+---
+
+## 🏗️ Arquitectura y Stack Tecnológico
+
+El proyecto es un monolito modular que sigue una arquitectura **MVVM (Model-View-ViewModel) Estricta**.
+*   **Regla de Oro:** Existe cero lógica de negocio o acceso a datos en el *Code-Behind* (`.xaml.cs`).
+*   **Lenguaje y UI:** C# (.NET 8) y Windows Presentation Foundation (WPF) usando DataBindings.
+*   **Lógica de Presentación:** `CommunityToolkit.Mvvm`.
 *   **Base de Datos Local:** SQLite (archivo `pos.db`).
-*   **Micro-ORM:** Dapper para consultas a base de datos eficientes mediante SQL crudo.
+*   **Micro-ORM:** Dapper para consultas a base de datos eficientes mediante SQL directo, prescindiendo de Entity Framework.
 *   **Seguridad:** Encriptación de contraseñas usando `BCrypt.Net-Next`.
 
-## Estructura del Proyecto
+---
+
+## 🗄️ Esquema de Base de Datos y Reglas de Negocio
+
+*   **Tipos de Datos:** Las llaves primarias (`Id`) se almacenan como `string` (GUIDs).
+*   **Valores Monetarios:** Se gestionan como tipo `decimal` en C# y se almacenan como `NUMERIC` en SQLite.
+*   **Fechas y Zonas Horarias:** Todas las fechas se guardan como `string` en formato ISO8601. Las transacciones fuerzan su registro en la zona horaria "America/Mazatlan" (MST).
+*   **Folios:** Se genera un `folio` secuencial (entero) independiente del GUID para visibilidad del cliente.
+*   **Soft Delete:** No se utiliza la instrucción `DELETE` en productos; se actualiza el campo `disponible` a `0` para mantener el historial.
+
+---
+
+## 📁 Estructura del Proyecto
+
+A continuación, se detalla la estructura actual del proyecto principal (`POS`):
 
 ```plaintext
 POS/
- ├── Models/           # Entidades que mapean la base de datos (Producto, Venta, Usuario)
  ├── Data/
- │   └── Repositories/ # Capa de persistencia usando Dapper y Sqlite
- ├── Services/         # Lógica de negocio (AuthService, TimeService, etc.)
- ├── ViewModels/       # Clases de estado de la vista y comandos
- ├── Views/            # Interfaces de usuario en XAML
- ├── Helpers/          # Convertidores o herramientas utilitarias 
- ├── App.xaml          # Punto de entrada de la aplicación
- ├── pos.db            # Archivo de base de datos
+ │   └── Repositories/       # Capa de persistencia (Dapper + SQLite)
+ │       ├── CategoriaRepository.cs
+ │       ├── ProductoRepository.cs
+ │       ├── UsuarioRepository.cs
+ │       └── VentaRepository.cs
+ ├── Helpers/                # Convertidores XAML y utilidades
+ ├── Models/                 # Entidades anémicas (BD)
+ │       ├── Categoria.cs
+ │       ├── DetalleVenta.cs
+ │       ├── Producto.cs
+ │       ├── Usuario.cs
+ │       └── Venta.cs
+ ├── Services/               # Lógica de negocio pura
+ │       ├── AuthService.cs
+ │       ├── IAuthService.cs
+ │       └── TimeService.cs
+ ├── ViewModels/             # Clases de estado de vista (CommunityToolkit.Mvvm)
+ │       ├── InventarioViewModel.cs
+ │       ├── LoginViewModel.cs
+ │       └── POSViewModel.cs
+ ├── Views/                  # Interfaces de usuario (XAML)
+ │       ├── InventarioView.xaml
+ │       ├── LoginView.xaml
+ │       └── POSView.xaml
+ ├── App.xaml                # Configuración global e inyección de dependencias
+ └── POS.db                  # Archivo local de base de datos SQLite
+
 ```
 
-## Guía de Uso Rápido e Instalación
+---
+
+## 🚀 Guía de Uso Rápido e Instalación
 
 ### Pre-requisitos
-*   Tener instalado **.NET 8 SDK**.
+
+* Tener instalado **.NET 8 SDK**.
 
 ### Compilar y Ejecutar
+
 1. Clona el repositorio.
 2. Asegúrate de compilar y restaurar las dependencias del proyecto ejecutando:
-   ```bash
-   dotnet build
-   ```
+```bash
+dotnet build
+
+```
+
+
 3. Ejecuta el sistema:
-   ```bash
-   dotnet run --project POS/POS.csproj
-   ```
+```bash
+dotnet run --project POS/POS.csproj
 
-### Uso General (Una vez implementadas las vistas)
-1. **Inicio de Sesión:** Ingresa tus credenciales en la pantalla de *Login*. Dependiendo de tu rol asignado, el sistema bloqueará ciertos accesos (ej. reportes bloqueados para Cajero).
-2. **Caja / Punto de Venta:** Pantalla responsiva orientada al uso del teclado o escáner de códigos de barras (Ej. `F1` para cobrar, `F5` para limpiar carrito).
-3. **Inventario:** Permite el CRUD de los productos y sus respectivas categorías, y valida el margen de ganancias de manera estricta.
+```
 
-> **Nota para Desarrolladores:** Siempre asegúrate de utilizar el servicio de inyección para autenticación (`AuthService`) y de obtener la hora a través de `TimeService` (America/Mazatlan). No uses `DateTime.Now` directamente en los Repositorios de datos.
+
+
+### Uso General
+
+* **Inicio de Sesión:** El sistema bloqueará accesos (como reportes) dependiendo de si el rol es *Cajero* o *Administrador*.
+* **Punto de Venta:** Optimizado para uso al 100% con teclado y lector de códigos.
+* `Enter`: Agrega el producto al carrito.
+* `F1`: Cobra la venta.
+* `F5`: Vacía el carrito cancelando la venta.
+
+
+* **Inventario:** Permite CRUD estricto de productos y valida los márgenes de precio.
+
+> **Nota para Desarrolladores:** Siempre asegúrate de utilizar el servicio de inyección para autenticación (`IAuthService`) y de obtener la hora a través de `TimeService` (America/Mazatlan). No uses `DateTime.Now` directamente en los Repositorios de datos.
+
+```
