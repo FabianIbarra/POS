@@ -6,7 +6,7 @@ namespace POS.Views
 {
     /// <summary>
     /// Control de usuario que encapsula la interfaz del Punto de Venta.
-    /// Se utiliza dentro del MainView para la navegacion por modulos.
+    /// Se utiliza dentro del MainView para la navegación por módulos.
     /// </summary>
     public partial class POSControl : UserControl
     {

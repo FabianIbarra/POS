@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using POS.ViewModels;
 
 namespace POS.Views
@@ -23,6 +24,18 @@ namespace POS.Views
 
             // Configurar el binding de la contraseña
             PasswordBox.PasswordChanged += PasswordBox_PasswordChanged;
+        }
+
+        /// <summary>
+        /// Maneja la tecla Enter en el campo de usuario para saltar al campo de contraseña.
+        /// </summary>
+        private void UsernameTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                PasswordBox.Focus();
+                e.Handled = true;
+            }
         }
 
         /// <summary>

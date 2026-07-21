@@ -7,7 +7,8 @@
     Height="410"
     Background="#F5F5F5"
     ResizeMode="NoResize"
-    WindowStartupLocation="CenterScreen">
+    WindowStartupLocation="CenterScreen"
+    FocusManager.FocusedElement="{Binding ElementName=UsernameTextBox}">
     <Grid Margin="0,0,0,0">
         <StackPanel
             Width="380"
@@ -46,6 +47,7 @@
                     BorderBrush="#CCCCCC"
                     BorderThickness="1"
                     FontSize="13"
+                    KeyDown="UsernameTextBox_KeyDown"
                     Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
 
                 <!--  Placeholder de Usuario con Trigger automático  -->
@@ -84,7 +86,11 @@
                     BorderBrush="#CCCCCC"
                     BorderThickness="1"
                     FontSize="13"
-                    PreviewKeyDown="Password_PreviewKeyDown" />
+                    PreviewKeyDown="Password_PreviewKeyDown">
+                    <PasswordBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding AutenticarCommand}" />
+                    </PasswordBox.InputBindings>
+                </PasswordBox>
 
                 <TextBox
                     x:Name="PasswordVisibleBox"
@@ -96,7 +102,11 @@
                     FontSize="13"
                     PreviewKeyDown="Password_PreviewKeyDown"
                     TextChanged="PasswordVisibleBox_TextChanged"
-                    Visibility="Collapsed" />
+                    Visibility="Collapsed">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding AutenticarCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
 
                 <!--  Placeholder de Contraseña (controlado desde C#)  -->
                 <TextBlock
