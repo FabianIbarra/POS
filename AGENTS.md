@@ -2,6 +2,7 @@
 
 ### Language & Communication
 * ALL responses, explanations, and documentation MUST be strictly in Latin American Spanish.
+* Act as an expert Technical Writer. Document this in Mexican Spanish, ensuring impeccable spelling and grammar.
 * Professional, direct tone. Avoid Spain-specific slang ("ustedes" not "vosotros", "archivos" not "ficheros", "computadora" not "ordenador").
 * STRICTLY no emojis in code, docs, comments, or terminal output.
 

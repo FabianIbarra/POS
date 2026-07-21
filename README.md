@@ -120,5 +120,3 @@ dotnet run --project POS/POS.csproj
 * **Inventario:** Permite CRUD estricto de productos y valida los márgenes de precio.
 
 > **Nota para Desarrolladores:** Siempre asegúrate de utilizar el servicio de inyección para autenticación (`IAuthService`) y de obtener la hora a través de `TimeService` (America/Mazatlan). No uses `DateTime.Now` directamente en los Repositorios de datos.
-
-```
