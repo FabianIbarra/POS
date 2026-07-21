@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using POS.Models;
 using POS.Data.Repositories;
 using POS.Services;
+using POS.Views;
 
 namespace POS.ViewModels
 {
@@ -101,37 +102,40 @@ namespace POS.ViewModels
                 return;
             }
 
-            var result = MessageBox.Show($"¿Desea procesar el cobro por {TotalVenta:C}?", "Confirmar Venta", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            var cobroVM = new CobroViewModel(TotalVenta);
+            var cobroView = new CobroView(cobroVM)
             {
-                try
+                Owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
+            };
+
+            cobroView.ShowDialog();
+
+            if (!cobroVM.Confirmado) return;
+
+            try
+            {
+                var nuevaVenta = new Venta
                 {
-                    var nuevaVenta = new Venta
-                    {
-                        IdVenta = Guid.NewGuid().ToString(),
-                        FechaHora = TimeService.ObtenerHoraLocalComoString(),
-                        Total = TotalVenta,
-                        MetodoPago = "Efectivo", // Por simplicidad, fijo. Se podría hacer dinámico después.
-                        IdUsuario = AuthService.SesionActual?.IdUsuario
-                    };
+                    IdVenta = Guid.NewGuid().ToString(),
+                    FechaHora = TimeService.ObtenerHoraLocalComoString(),
+                    Total = TotalVenta,
+                    MetodoPago = "Efectivo",
+                    IdUsuario = AuthService.SesionActual?.IdUsuario
+                };
 
-                    // Se asigna el IdVenta a todos los detalles antes de mandarlos al Repositorio
-                    foreach (var detalle in Carrito)
-                    {
-                        detalle.IdVenta = nuevaVenta.IdVenta;
-                    }
-
-                    // Ejecutamos la transacción
-                    _ventaRepo.RegistrarVenta(nuevaVenta, Carrito);
-
-                    MessageBox.Show($"Venta registrada exitosamente. Folio: {nuevaVenta.Folio}", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
-                    CancelarVenta(); // Limpia el carrito
-                }
-                catch (Exception ex)
+                foreach (var detalle in Carrito)
                 {
-                    MessageBox.Show($"Ocurrió un error al procesar la venta: {ex.Message}", "Error de Transacción", MessageBoxButton.OK, MessageBoxImage.Error);
+                    detalle.IdVenta = nuevaVenta.IdVenta;
                 }
+
+                _ventaRepo.RegistrarVenta(nuevaVenta, Carrito);
+
+                MessageBox.Show($"Venta registrada exitosamente. Folio: {nuevaVenta.Folio}", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CancelarVenta();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ocurrió un error al procesar la venta: {ex.Message}", "Error de Transacción", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

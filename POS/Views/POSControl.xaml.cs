@@ -1,4 +1,6 @@
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace POS.Views
 {
@@ -11,6 +13,18 @@ namespace POS.Views
         public POSControl()
         {
             InitializeComponent();
+            Loaded += (_, _) => EnfocarBuscador();
+            IsVisibleChanged += (_, _) =>
+            {
+                if (IsVisible) EnfocarBuscador();
+            };
+        }
+
+        private void EnfocarBuscador()
+        {
+            if (TxtBuscador == null) return;
+            TxtBuscador.Focus();
+            Keyboard.Focus(TxtBuscador);
         }
     }
 }
