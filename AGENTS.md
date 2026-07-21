@@ -15,7 +15,7 @@
 ### Architecture (WPF .NET 8, MVVM Strict)
 * Single project at `POS/POS.csproj`. Startup: `Views/LoginView.xaml`.
 * **Zero business logic or data access in `.xaml.cs` code-behind.**
-* Data access: Dapper + SQLite (two DB files: `POS.db` runtime, `POStest.db` for tests). **DO NOT use Entity Framework.**
+* Data access: Dapper + SQLite (`POS.db` runtime). **DO NOT use Entity Framework.**
 * No DI container -- Services/Repositories are instantiated directly (`new()` in ViewModels).
 * `MessageBox` is used directly in ViewModels (known anti-pattern, preserve existing pattern).
 * Culture forced to `es-MX` in `App.xaml.cs:OnStartup`. Timezone forced to `America/Mazatlan` via static `TimeService`.
@@ -25,7 +25,6 @@
 ```powershell
 dotnet build
 dotnet run --project POS/POS.csproj
-dotnet test                    # xUnit tests in the main project (POS\Tests)
 ```
 
 ### Repository Completeness

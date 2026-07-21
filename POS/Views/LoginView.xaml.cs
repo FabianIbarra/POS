@@ -56,11 +56,11 @@ namespace POS.Views
 
         private void ViewModel_LoginExitoso(object sender, System.EventArgs e)
         {
-            // 1. Instanciamos la ventana principal (Punto de Venta)
-            var posView = new POSView();
+            // 1. Instanciamos la ventana principal con navegación y sidebar
+            var mainView = new MainView();
 
             // 2. La mostramos en pantalla
-            posView.Show();
+            mainView.Show();
 
             // 3. Cerramos la ventana actual de Login para que no quede abierta en segundo plano
             this.Close();
