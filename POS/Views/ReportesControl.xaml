@@ -1,0 +1,312 @@
+<UserControl
+    x:Class="POS.Views.ReportesControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:POS.ViewModels"
+    Background="#F5F5F5">
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Panel de Filtros  -->
+        <Border
+            Grid.Row="0"
+            Margin="0,0,0,15"
+            Padding="20"
+            Background="White"
+            BorderBrush="#DDD"
+            BorderThickness="1"
+            CornerRadius="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <StackPanel Margin="0,0,20,0" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="#888"
+                            Text="Fecha Inicio" />
+                        <DatePicker
+                            Height="30"
+                            FontSize="13"
+                            SelectedDate="{Binding FechaInicio}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,20,0" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="#888"
+                            Text="Fecha Fin" />
+                        <DatePicker
+                            Height="30"
+                            FontSize="13"
+                            SelectedDate="{Binding FechaFin}" />
+                    </StackPanel>
+                    <Button
+                        Height="30"
+                        Margin="0,14,20,0"
+                        Padding="15,0"
+                        Background="#3498DB"
+                        BorderThickness="0"
+                        Command="{Binding BuscarPorFechasCommand}"
+                        Content="Buscar por Fechas"
+                        Cursor="Hand"
+                        FontWeight="SemiBold"
+                        Foreground="White" />
+                    <Button
+                        Height="30"
+                        Margin="0,14,20,0"
+                        Padding="15,0"
+                        Background="#2ECC71"
+                        BorderThickness="0"
+                        Command="{Binding CargarVentasDelDiaCommand}"
+                        Content="Ventas del Dia"
+                        Cursor="Hand"
+                        FontWeight="SemiBold"
+                        Foreground="White" />
+                    <StackPanel Margin="0,0,0,0" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="#888"
+                            Text="Buscar por Folio" />
+                        <Grid>
+                            <TextBox
+                                Width="120"
+                                Height="30"
+                                Padding="5,0"
+                                BorderBrush="#CCC"
+                                FontSize="13"
+                                Text="{Binding FolioBusqueda, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Enter" Command="{Binding BuscarPorFolioCommand}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+
+                <Button
+                    Grid.Column="1"
+                    Height="30"
+                    Margin="0,14,0,0"
+                    Padding="15,0"
+                    Background="#E67E22"
+                    BorderThickness="0"
+                    Command="{Binding BuscarPorFolioCommand}"
+                    Content="Buscar Folio"
+                    Cursor="Hand"
+                    FontWeight="SemiBold"
+                    Foreground="White" />
+            </Grid>
+        </Border>
+
+        <!--  Resultados: Tabla de Ventas + Detalle  -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="15" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Tabla de Ventas  -->
+            <Border
+                Grid.Column="0"
+                Padding="0"
+                Background="White"
+                BorderBrush="#DDD"
+                BorderThickness="1"
+                CornerRadius="5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Margin="15,10"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Foreground="#333"
+                        Text="Ventas" />
+
+                    <DataGrid
+                        Grid.Row="1"
+                        AutoGenerateColumns="False"
+                        Background="White"
+                        BorderThickness="0"
+                        CanUserAddRows="False"
+                        FontSize="13"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding Ventas}"
+                        RowHeight="30"
+                        SelectedItem="{Binding VentaSeleccionada}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding Folio}"
+                                Header="Folio" />
+                            <DataGridTextColumn
+                                Width="140"
+                                Binding="{Binding FechaHora}"
+                                Header="Fecha y Hora" />
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding Total, StringFormat=C}"
+                                Header="Total" />
+                            <DataGridTextColumn
+                                Width="80"
+                                Binding="{Binding MetodoPago}"
+                                Header="Pago" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!--  Panel de Detalle  -->
+            <Border
+                Grid.Column="2"
+                MinWidth="300"
+                Padding="15"
+                Background="White"
+                BorderBrush="#DDD"
+                BorderThickness="1"
+                CornerRadius="5"
+                Visibility="{Binding TieneResultados, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,10"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Foreground="#333"
+                        Text="Detalle de Venta" />
+
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="#888"
+                        Text="Folio:" />
+                    <TextBlock
+                        Margin="0,0,0,10"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Text="{Binding VentaSeleccionada.Folio, FallbackValue=---}" />
+
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="#888"
+                        Text="Fecha:" />
+                    <TextBlock
+                        Margin="0,0,0,10"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Text="{Binding VentaSeleccionada.FechaHora, FallbackValue=---}" />
+
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="#888"
+                        Text="Total:" />
+                    <TextBlock
+                        Margin="0,0,0,10"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="#4CAF50"
+                        Text="{Binding VentaSeleccionada.Total, StringFormat=C, FallbackValue=---}" />
+
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="#888"
+                        Text="Método de Pago:" />
+                    <TextBlock
+                        Margin="0,0,0,15"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Text="{Binding VentaSeleccionada.MetodoPago, FallbackValue=---}" />
+
+                    <Border
+                        Height="1"
+                        Margin="0,0,0,10"
+                        Background="#DDD" />
+
+                    <TextBlock
+                        Margin="0,0,0,10"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="#333"
+                        Text="Productos" />
+
+                    <ItemsControl
+                        MaxHeight="200"
+                        FontSize="13"
+                        ItemsSource="{Binding DetallesVenta}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="80" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Descripcion}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        Text="{Binding Cantidad}" />
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Right"
+                                        Text="{Binding Subtotal, StringFormat=C}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!--  Barra de Resumen  -->
+        <Border
+            Grid.Row="2"
+            Margin="0,15,0,0"
+            Padding="15,10"
+            Background="White"
+            BorderBrush="#DDD"
+            BorderThickness="1"
+            CornerRadius="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Column="0"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    Foreground="#333"
+                    Text="{Binding ResumenTexto}" />
+
+                <TextBlock
+                    Grid.Column="2"
+                    FontSize="14"
+                    Foreground="#888"
+                    Text="Total Ingresos:" />
+
+                <TextBlock
+                    Grid.Column="4"
+                    FontSize="22"
+                    FontWeight="Bold"
+                    Foreground="#4CAF50"
+                    Text="{Binding TotalIngresos, StringFormat=C}" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

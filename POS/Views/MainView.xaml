@@ -8,6 +8,7 @@
     Width="1200"
     Height="800"
     Background="#F5F5F5"
+    Icon="/POSLogo.png"
     WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -20,6 +21,12 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:InventarioViewModel}">
             <views:InventarioControl />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ReportesViewModel}">
+            <views:ReportesControl />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:UsuariosViewModel}">
+            <views:UsuariosControl />
         </DataTemplate>
 
         <!--  ESTILO REUTILIZABLE PARA BOTONES DEL MENÚ LATERAL  -->
@@ -194,6 +201,24 @@
                                 FontSize="14"
                                 FontWeight="Medium"
                                 Text="Reportes" />
+                        </StackPanel>
+                    </Button>
+
+                    <!--  Usuarios (solo para Administrador)  -->
+                    <Button
+                        Command="{Binding IrAUsuariosCommand}"
+                        Style="{StaticResource MenuButtonStyle}"
+                        Visibility="{Binding EsAdministrador, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                Margin="0,0,12,0"
+                                FontSize="16"
+                                FontWeight="Bold"
+                                Text="▪" />
+                            <TextBlock
+                                FontSize="14"
+                                FontWeight="Medium"
+                                Text="Usuarios" />
                         </StackPanel>
                     </Button>
 

@@ -96,5 +96,46 @@ namespace POS.Data.Repositories
                 return connection.Query<DetalleVenta>(sql, new { IdVenta = idVenta });
             }
         }
+
+        /// <summary>
+        /// Obtiene las ventas dentro de un rango de fechas.
+        /// Las fechas deben estar en formato ISO8601 (yyyy-MM-ddTHH:mm:ss).
+        /// </summary>
+        public IEnumerable<Venta> ObtenerVentasPorRangoFechas(string fechaInicio, string fechaFin)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                var sql = @"SELECT id_venta AS IdVenta, folio, fecha_hora AS FechaHora, total, 
+                                   metodo_pago AS MetodoPago, id_usuario AS IdUsuario
+                            FROM Ventas 
+                            WHERE fecha_hora >= @FechaInicio AND fecha_hora <= @FechaFin
+                            ORDER BY folio DESC";
+                return connection.Query<Venta>(sql, new { FechaInicio = fechaInicio, FechaFin = fechaFin });
+            }
+        }
+
+        /// <summary>
+        /// Obtiene una venta por su número de folio.
+        /// </summary>
+        public Venta? ObtenerVentaPorFolio(int folio)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                var sql = "SELECT id_venta AS IdVenta, folio, fecha_hora AS FechaHora, total, metodo_pago AS MetodoPago, id_usuario AS IdUsuario FROM Ventas WHERE folio = @Folio";
+                return connection.QueryFirstOrDefault<Venta>(sql, new { Folio = folio });
+            }
+        }
+
+        /// <summary>
+        /// Obtiene el nombre completo del usuario a partir de su Id.
+        /// </summary>
+        public string? ObtenerNombreUsuario(string idUsuario)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                var sql = "SELECT nombre_completo FROM Usuarios WHERE id_usuario = @IdUsuario";
+                return connection.QueryFirstOrDefault<string>(sql, new { IdUsuario = idUsuario });
+            }
+        }
     }
 }

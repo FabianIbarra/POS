@@ -16,12 +16,15 @@ namespace POS
         {
             base.OnStartup(e);
 
-            // Forzar Pesos Mexicanos (es-MX) en toda la lógica de C#
+            // Sembrar usuario administrador por defecto si la tabla esta vacia
+            SeedAdmin.VerificarYSembrar();
+
+            // Forzar Pesos Mexicanos (es-MX) en toda la logica de C#
             var culture = new CultureInfo("es-MX");
             Thread.CurrentThread.CurrentCulture = culture;
             Thread.CurrentThread.CurrentUICulture = culture;
 
-            // Forzar la misma cultura en la interfaz gráfica (XAML)
+            // Forzar la misma cultura en la interfaz grafica (XAML)
             FrameworkElement.LanguageProperty.OverrideMetadata(
                 typeof(FrameworkElement),
                 new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(culture.IetfLanguageTag)));

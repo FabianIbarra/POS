@@ -57,7 +57,13 @@ namespace POS.ViewModels
         [RelayCommand]
         private void IrAReportes()
         {
-            MessageBox.Show("El módulo de Reportes aún no está implementado.", "Próximamente", MessageBoxButton.OK, MessageBoxImage.Information);
+            CurrentViewModel = new ReportesViewModel();
+        }
+
+        [RelayCommand]
+        private void IrAUsuarios()
+        {
+            CurrentViewModel = new UsuariosViewModel();
         }
 
         [RelayCommand]
