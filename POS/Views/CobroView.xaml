@@ -1,0 +1,111 @@
+<Window
+    x:Class="POS.Views.CobroView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Cobrar Venta"
+    Width="450"
+    Height="500"
+    Background="{StaticResource AppBackgroundBrush}"
+    FocusManager.FocusedElement="{Binding ElementName=txtEfectivo}"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterOwner">
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Total de la Venta  -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock
+                FontSize="14"
+                FontWeight="SemiBold"
+                Foreground="{StaticResource TextSidebarMutedBrush}"
+                Text="TOTAL A COBRAR" />
+            <TextBlock
+                Margin="0,-2,0,0"
+                FontSize="48"
+                FontWeight="Black"
+                Foreground="{StaticResource SidebarBrush}"
+                Text="{Binding Total, StringFormat=C}" />
+        </StackPanel>
+
+        <!--  Efectivo Recibido  -->
+        <StackPanel Grid.Row="1">
+            <TextBlock
+                Margin="0,0,0,8"
+                FontSize="14"
+                FontWeight="SemiBold"
+                Foreground="{StaticResource TextSidebarMutedBrush}"
+                Text="EFECTIVO RECIBIDO" />
+            <TextBox
+                x:Name="txtEfectivo"
+                Height="60"
+                Padding="15,0"
+                BorderBrush="{StaticResource StrongBorderBrush}"
+                BorderThickness="2"
+                FontSize="32"
+                FontWeight="Bold"
+                Foreground="{StaticResource SidebarBrush}"
+                Style="{StaticResource TextBoxStyle}"
+                Text="{Binding EfectivoRecibido, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+
+        <!--  Cambio (tarjeta resaltada)  -->
+        <Border
+            Grid.Row="3"
+            Margin="0,0,0,25"
+            Padding="20,15"
+            Background="{StaticResource MintLightBrush}"
+            BorderBrush="{StaticResource MintBrush}"
+            BorderThickness="2"
+            CornerRadius="8">
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock
+                    Margin="0,0,0,2"
+                    HorizontalAlignment="Center"
+                    FontSize="15"
+                    FontWeight="Bold"
+                    Foreground="{StaticResource MintDarkBrush}"
+                    Text="SU CAMBIO" />
+                <TextBlock
+                    Margin="0,-8,0,0"
+                    HorizontalAlignment="Center"
+                    FontSize="56"
+                    FontWeight="Black"
+                    Foreground="{StaticResource MintBrush}"
+                    Text="{Binding Cambio, StringFormat=C}" />
+            </StackPanel>
+        </Border>
+
+        <!--  Acciones  -->
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="15" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                Grid.Column="0"
+                Height="55"
+                Command="{Binding CancelarCommand}"
+                Content="CANCELAR"
+                FontSize="16"
+                Style="{StaticResource DangerButtonStyle}" />
+
+            <Button
+                Grid.Column="2"
+                Height="55"
+                Command="{Binding ConfirmarCommand}"
+                Content="COBRAR"
+                FontSize="16"
+                Style="{StaticResource SuccessButtonStyle}" />
+        </Grid>
+    </Grid>
+</Window>

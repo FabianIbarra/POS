@@ -1,0 +1,242 @@
+<UserControl
+    x:Class="POS.Views.POSControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="{StaticResource AppBackgroundBrush}"
+    FocusManager.FocusedElement="{Binding ElementName=TxtBuscador}">
+
+    <UserControl.InputBindings>
+        <KeyBinding Key="F1" Command="{Binding CobrarVentaCommand}" />
+        <KeyBinding Key="F5" Command="{Binding CancelarVentaCommand}" />
+        <KeyBinding Key="OemPlus" Command="{Binding IncrementarCantidadCommand}" />
+        <KeyBinding Key="Add" Command="{Binding IncrementarCantidadCommand}" />
+        <KeyBinding Key="OemMinus" Command="{Binding DecrementarCantidadCommand}" />
+        <KeyBinding Key="Subtract" Command="{Binding DecrementarCantidadCommand}" />
+        <KeyBinding Key="Delete" Command="{Binding EliminarRenglonCommand}" />
+        <KeyBinding Key="Up" Command="{Binding SeleccionarAnteriorCommand}" />
+        <KeyBinding Key="Down" Command="{Binding SeleccionarSiguienteCommand}" />
+    </UserControl.InputBindings>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Cabecera y Buscador  -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <TextBlock
+                    Margin="0,0,12,0"
+                    VerticalAlignment="Center"
+                    FontSize="16"
+                    FontWeight="SemiBold"
+                    Text="Código de Barras:" />
+                <Grid>
+                    <TextBox
+                        x:Name="TxtBuscador"
+                        Width="320"
+                        Height="40"
+                        Padding="5,0"
+                        FontSize="18"
+                        Style="{StaticResource TextBoxStyle}">
+                        <TextBox.Text>
+                            <Binding Path="CodigoEscaneado" UpdateSourceTrigger="PropertyChanged" />
+                        </TextBox.Text>
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding AgregarProductoCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <TextBlock Margin="10,0,0,0" Text="Escanea el código y presiona Enter">
+                        <TextBlock.Style>
+                            <Style BasedOn="{StaticResource PlaceholderTextStyle}" TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=TxtBuscador}" Value="">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </StackPanel>
+
+            <!--  Atajos de teclado  -->
+            <StackPanel
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <Border Margin="0,0,6,0" Style="{StaticResource ChipStyle}">
+                    <TextBlock
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Text="F1 - Cobrar" />
+                </Border>
+                <Border Margin="0,0,6,0" Style="{StaticResource ChipStyle}">
+                    <TextBlock
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Text="Flechas - Navegar" />
+                </Border>
+                <Border Margin="0,0,6,0" Style="{StaticResource ChipStyle}">
+                    <TextBlock
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Text="+/- Cant." />
+                </Border>
+                <Border Margin="0,0,6,0" Style="{StaticResource ChipStyle}">
+                    <TextBlock
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Text="Supr - Quitar" />
+                </Border>
+                <Border Style="{StaticResource ChipStyle}">
+                    <TextBlock
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Text="F5 - Cancelar" />
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <!--  Carrito  -->
+        <DataGrid
+            Grid.Row="1"
+            IsReadOnly="False"
+            ItemsSource="{Binding Carrito}"
+            RowHeight="38"
+            SelectedItem="{Binding Seleccionado, UpdateSourceTrigger=PropertyChanged}"
+            Style="{StaticResource DataGridStyle}">
+            <DataGrid.InputBindings>
+                <KeyBinding Key="Delete" Command="{Binding EliminarRenglonCommand}" />
+            </DataGrid.InputBindings>
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Descripcion}"
+                    Header="Descripción"
+                    IsReadOnly="True" />
+                <DataGridTemplateColumn
+                    Width="100"
+                    Header="Cantidad"
+                    IsReadOnly="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                Text="{Binding Cantidad}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox
+                                Margin="5,0"
+                                VerticalAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                Text="{Binding Cantidad, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn
+                    Width="120"
+                    Binding="{Binding PrecioUnitario, StringFormat=C}"
+                    Header="Precio Unit."
+                    IsReadOnly="True" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Subtotal, StringFormat=C}"
+                    Header="Subtotal"
+                    IsReadOnly="True" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!--  Desglose de Totales  -->
+        <Border
+            Grid.Row="2"
+            Margin="0,10,0,0"
+            Style="{StaticResource CardStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <StackPanel Margin="0,0,40,0">
+                        <TextBlock Style="{StaticResource SmallTextStyle}" Text="Subtotal sin IVA" />
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource TextPrimaryBrush}"
+                            Text="{Binding SubtotalSinIVA, StringFormat=C}" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SmallTextStyle}" Text="IVA (16%)" />
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource WarningBrush}"
+                            Text="{Binding Iva, StringFormat=C}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock
+                        Margin="0,0,15,0"
+                        VerticalAlignment="Center"
+                        FontSize="28"
+                        FontWeight="Bold"
+                        Text="TOTAL:" />
+                    <TextBlock
+                        Margin="0,0,20,0"
+                        VerticalAlignment="Center"
+                        FontSize="36"
+                        FontWeight="Bold"
+                        Foreground="{StaticResource SuccessBrush}"
+                        Text="{Binding TotalVenta, StringFormat=C}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!--  Acciones  -->
+        <Grid Grid.Row="3" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                Grid.Column="0"
+                Width="200"
+                Height="50"
+                Command="{Binding CancelarVentaCommand}"
+                Content="Cancelar Venta (F5)"
+                FontSize="16"
+                Style="{StaticResource DangerButtonStyle}" />
+
+            <Button
+                Grid.Column="2"
+                Width="200"
+                Height="60"
+                Command="{Binding CobrarVentaCommand}"
+                Content="COBRAR (F1)"
+                FontSize="20"
+                Style="{StaticResource SuccessButtonStyle}" />
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,133 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.Data.Sqlite;
+using Dapper;
+using POS.Models;
+
+namespace POS.Data.Repositories
+{
+    /// <summary>
+    /// Repositorio transaccional para el manejo de Ventas.
+    /// Realiza los inserts y actualización de stock dentro de una transacción.
+    /// </summary>
+    public class VentaRepository : BaseRepository
+    {
+
+        /// <summary>
+        /// Registra una nueva venta de manera transaccional y descontando el stock correspondiente.
+        /// </summary>
+        public void RegistrarVenta(Venta venta, IEnumerable<DetalleVenta> detalles)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        var sqlMaxFolio = "SELECT MAX(folio) FROM Ventas";
+                        var maxFolio = connection.QueryFirstOrDefault<int?>(sqlMaxFolio, null, transaction) ?? 0;
+                        venta.Folio = maxFolio + 1;
+
+                        var sqlVenta = @"
+                            INSERT INTO Ventas (id_venta, folio, fecha_hora, total, metodo_pago, id_usuario) 
+                            VALUES (@IdVenta, @Folio, @FechaHora, @Total, @MetodoPago, @IdUsuario)";
+                        connection.Execute(sqlVenta, venta, transaction);
+
+                        var sqlDetalle = @"
+                            INSERT INTO Detalles_Venta (id_detalle, id_venta, id_producto, cantidad, precio_unitario, subtotal) 
+                            VALUES (@IdDetalle, @IdVenta, @IdProducto, @Cantidad, @PrecioUnitario, @Subtotal)";
+                        
+                        var sqlUpdateStock = @"
+                            UPDATE Productos 
+                            SET stock = stock - @Cantidad 
+                            WHERE id_producto = @IdProducto";
+
+                        foreach (var detalle in detalles)
+                        {
+                            connection.Execute(sqlDetalle, detalle, transaction);
+                            connection.Execute(sqlUpdateStock, new { Cantidad = detalle.Cantidad, IdProducto = detalle.IdProducto }, transaction);
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Obtiene todas las ventas.
+        /// </summary>
+        public IEnumerable<Venta> ObtenerVentas()
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                var sql = "SELECT id_venta AS IdVenta, folio, fecha_hora AS FechaHora, total, metodo_pago AS MetodoPago, id_usuario AS IdUsuario FROM Ventas";
+                return connection.Query<Venta>(sql);
+            }
+        }
+
+        /// <summary>
+        /// Obtiene una venta por su Id.
+        /// </summary>
+        public Venta ObtenerVentaPorId(string idVenta)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                var sql = "SELECT id_venta AS IdVenta, folio, fecha_hora AS FechaHora, total, metodo_pago AS MetodoPago, id_usuario AS IdUsuario FROM Ventas WHERE id_venta = @IdVenta";
+                return connection.QueryFirstOrDefault<Venta>(sql, new { IdVenta = idVenta });
+            }
+        }
+
+        /// <summary>
+        /// Obtiene los detalles de una venta específica mediante el Id de la venta.
+        /// </summary>
+        public IEnumerable<DetalleVenta> ObtenerDetallesPorVentaId(string idVenta)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                var sql = @"SELECT d.id_detalle AS IdDetalle, d.id_venta AS IdVenta, d.id_producto AS IdProducto, 
+                                   d.cantidad, d.precio_unitario AS PrecioUnitario, d.subtotal, 
+                                   p.descripcion AS Descripcion
+                            FROM Detalles_Venta d
+                            INNER JOIN Productos p ON p.id_producto = d.id_producto
+                            WHERE d.id_venta = @IdVenta";
+                return connection.Query<DetalleVenta>(sql, new { IdVenta = idVenta });
+            }
+        }
+
+        /// <summary>
+        /// Obtiene las ventas dentro de un rango de fechas.
+        /// Las fechas deben estar en formato ISO8601 (yyyy-MM-ddTHH:mm:ss).
+        /// </summary>
+        public IEnumerable<Venta> ObtenerVentasPorRangoFechas(string fechaInicio, string fechaFin)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                var sql = @"SELECT id_venta AS IdVenta, folio, fecha_hora AS FechaHora, total, 
+                                   metodo_pago AS MetodoPago, id_usuario AS IdUsuario
+                            FROM Ventas 
+                            WHERE fecha_hora >= @FechaInicio AND fecha_hora <= @FechaFin
+                            ORDER BY folio DESC";
+                return connection.Query<Venta>(sql, new { FechaInicio = fechaInicio, FechaFin = fechaFin });
+            }
+        }
+
+        /// <summary>
+        /// Obtiene una venta por su número de folio.
+        /// </summary>
+        public Venta? ObtenerVentaPorFolio(int folio)
+        {
+            using (var connection = new SqliteConnection(ConnectionString))
+            {
+                var sql = "SELECT id_venta AS IdVenta, folio, fecha_hora AS FechaHora, total, metodo_pago AS MetodoPago, id_usuario AS IdUsuario FROM Ventas WHERE folio = @Folio";
+                return connection.QueryFirstOrDefault<Venta>(sql, new { Folio = folio });
+            }
+        }
+    }
+}
