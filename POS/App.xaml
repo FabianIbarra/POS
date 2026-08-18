@@ -6,8 +6,20 @@
     xmlns:local="clr-namespace:POS"
     StartupUri="Views/LoginView.xaml">
     <Application.Resources>
-        <!--  Convertidores globales  -->
-        <helpers:NotBooleanConverter x:Key="NotBooleanConverter" />
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Colors.xaml" />
+                <ResourceDictionary Source="Themes/Typography.xaml" />
+                <ResourceDictionary Source="Themes/Buttons.xaml" />
+                <ResourceDictionary Source="Themes/Inputs.xaml" />
+                <ResourceDictionary Source="Themes/DataGrids.xaml" />
+                <ResourceDictionary Source="Themes/Tabs.xaml" />
+                <ResourceDictionary Source="Themes/Cards.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!--  Convertidores globales  -->
+            <helpers:NotBooleanConverter x:Key="NotBooleanConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

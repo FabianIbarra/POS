@@ -8,16 +8,15 @@ namespace POS.Data.Repositories
     /// <summary>
     /// Repositorio para la gestión de acceso a datos de los Usuarios apoyándose de Dapper.
     /// </summary>
-    public class UsuarioRepository
+    public class UsuarioRepository : BaseRepository
     {
-        private readonly string _connectionString = "Data Source=POS.db";
 
         /// <summary>
         /// Agrega un nuevo usuario a la base de datos.
         /// </summary>
         public void AgregarUsuario(Usuario usuario)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = @"INSERT INTO Usuarios (id_usuario, username, password_hash, nombre_completo, rol) 
                             VALUES (@IdUsuario, @Username, @PasswordHash, @NombreCompleto, @Rol)";
@@ -30,7 +29,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public IEnumerable<Usuario> ObtenerUsuarios()
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "SELECT id_usuario AS IdUsuario, username, password_hash AS PasswordHash, nombre_completo AS NombreCompleto, rol FROM Usuarios";
                 return connection.Query<Usuario>(sql);
@@ -42,7 +41,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public Usuario ObtenerUsuarioPorId(string idUsuario)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "SELECT id_usuario AS IdUsuario, username, password_hash AS PasswordHash, nombre_completo AS NombreCompleto, rol FROM Usuarios WHERE id_usuario = @IdUsuario";
                 return connection.QueryFirstOrDefault<Usuario>(sql, new { IdUsuario = idUsuario });
@@ -56,7 +55,7 @@ namespace POS.Data.Repositories
         /// <returns>La entidad de usuario encontrada, o null si no existe.</returns>
         public Usuario ObtenerUsuarioPorUsername(string username)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "SELECT id_usuario AS IdUsuario, username, password_hash AS PasswordHash, nombre_completo AS NombreCompleto, rol FROM Usuarios WHERE username = @Username";
                 return connection.QueryFirstOrDefault<Usuario>(sql, new { Username = username });
@@ -68,7 +67,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public void EditarUsuario(Usuario usuario)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = @"UPDATE Usuarios SET 
                             username = @Username, 
@@ -85,7 +84,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public void EliminarUsuario(string idUsuario)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "DELETE FROM Usuarios WHERE id_usuario = @IdUsuario";
                 connection.Execute(sql, new { IdUsuario = idUsuario });

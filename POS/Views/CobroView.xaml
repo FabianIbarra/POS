@@ -5,63 +5,11 @@
     Title="Cobrar Venta"
     Width="450"
     Height="500"
-    Background="#F5F5F5"
+    Background="{StaticResource AppBackgroundBrush}"
     FocusManager.FocusedElement="{Binding ElementName=txtEfectivo}"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterOwner">
-
-    <Window.Resources>
-        <!--  ESTILO BOTÓN COBRAR (VERDE)  -->
-        <Style x:Key="BtnCobrarStyle" TargetType="Button">
-            <Setter Property="Background" Value="#27AE60" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Height" Value="55" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#2ECC71" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--  ESTILO BOTÓN CANCELAR (ROJO)  -->
-        <Style x:Key="BtnCancelarStyle" TargetType="Button">
-            <Setter Property="Background" Value="#E74C3C" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Height" Value="55" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#C0392B" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
 
     <Grid Margin="30">
         <Grid.RowDefinitions>
@@ -72,55 +20,49 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!--  1. Total de la Venta  -->
+        <!--  Total de la Venta  -->
         <StackPanel Grid.Row="0" Margin="0,0,0,20">
             <TextBlock
                 FontSize="14"
                 FontWeight="SemiBold"
-                Foreground="#7F8C8D"
+                Foreground="{StaticResource TextSidebarMutedBrush}"
                 Text="TOTAL A COBRAR" />
             <TextBlock
                 Margin="0,-2,0,0"
                 FontSize="48"
                 FontWeight="Black"
-                Foreground="#2C3E50"
+                Foreground="{StaticResource SidebarBrush}"
                 Text="{Binding Total, StringFormat=C}" />
         </StackPanel>
 
-        <!--  2. Efectivo Recibido  -->
+        <!--  Efectivo Recibido  -->
         <StackPanel Grid.Row="1">
             <TextBlock
                 Margin="0,0,0,8"
                 FontSize="14"
                 FontWeight="SemiBold"
-                Foreground="#7F8C8D"
+                Foreground="{StaticResource TextSidebarMutedBrush}"
                 Text="EFECTIVO RECIBIDO" />
             <TextBox
                 x:Name="txtEfectivo"
                 Height="60"
                 Padding="15,0"
-                VerticalContentAlignment="Center"
-                BorderBrush="#BDC3C7"
+                BorderBrush="{StaticResource StrongBorderBrush}"
                 BorderThickness="2"
                 FontSize="32"
                 FontWeight="Bold"
-                Foreground="#2C3E50"
-                Text="{Binding EfectivoRecibido, UpdateSourceTrigger=PropertyChanged}">
-                <TextBox.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="6" />
-                    </Style>
-                </TextBox.Resources>
-            </TextBox>
+                Foreground="{StaticResource SidebarBrush}"
+                Style="{StaticResource TextBoxStyle}"
+                Text="{Binding EfectivoRecibido, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
 
-        <!--  3. Tarjeta de Cambio (Resaltada)  -->
+        <!--  Cambio (tarjeta resaltada)  -->
         <Border
             Grid.Row="3"
             Margin="0,0,0,25"
             Padding="20,15"
-            Background="#E8F8F5"
-            BorderBrush="#1ABC9C"
+            Background="{StaticResource MintLightBrush}"
+            BorderBrush="{StaticResource MintBrush}"
             BorderThickness="2"
             CornerRadius="8">
             <StackPanel HorizontalAlignment="Center">
@@ -129,19 +71,19 @@
                     HorizontalAlignment="Center"
                     FontSize="15"
                     FontWeight="Bold"
-                    Foreground="#16A085"
+                    Foreground="{StaticResource MintDarkBrush}"
                     Text="SU CAMBIO" />
                 <TextBlock
                     Margin="0,-8,0,0"
                     HorizontalAlignment="Center"
                     FontSize="56"
                     FontWeight="Black"
-                    Foreground="#1ABC9C"
+                    Foreground="{StaticResource MintBrush}"
                     Text="{Binding Cambio, StringFormat=C}" />
             </StackPanel>
         </Border>
 
-        <!--  4. Botones de Acción  -->
+        <!--  Acciones  -->
         <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -151,15 +93,19 @@
 
             <Button
                 Grid.Column="0"
+                Height="55"
                 Command="{Binding CancelarCommand}"
                 Content="CANCELAR"
-                Style="{StaticResource BtnCancelarStyle}" />
+                FontSize="16"
+                Style="{StaticResource DangerButtonStyle}" />
 
             <Button
                 Grid.Column="2"
+                Height="55"
                 Command="{Binding ConfirmarCommand}"
                 Content="COBRAR"
-                Style="{StaticResource BtnCobrarStyle}" />
+                FontSize="16"
+                Style="{StaticResource SuccessButtonStyle}" />
         </Grid>
     </Grid>
 </Window>

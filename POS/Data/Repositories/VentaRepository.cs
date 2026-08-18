@@ -10,16 +10,15 @@ namespace POS.Data.Repositories
     /// Repositorio transaccional para el manejo de Ventas.
     /// Realiza los inserts y actualización de stock dentro de una transacción.
     /// </summary>
-    public class VentaRepository
+    public class VentaRepository : BaseRepository
     {
-        private readonly string _connectionString = "Data Source=POS.db";
 
         /// <summary>
         /// Registra una nueva venta de manera transaccional y descontando el stock correspondiente.
         /// </summary>
         public void RegistrarVenta(Venta venta, IEnumerable<DetalleVenta> detalles)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
@@ -66,7 +65,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public IEnumerable<Venta> ObtenerVentas()
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "SELECT id_venta AS IdVenta, folio, fecha_hora AS FechaHora, total, metodo_pago AS MetodoPago, id_usuario AS IdUsuario FROM Ventas";
                 return connection.Query<Venta>(sql);
@@ -78,7 +77,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public Venta ObtenerVentaPorId(string idVenta)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "SELECT id_venta AS IdVenta, folio, fecha_hora AS FechaHora, total, metodo_pago AS MetodoPago, id_usuario AS IdUsuario FROM Ventas WHERE id_venta = @IdVenta";
                 return connection.QueryFirstOrDefault<Venta>(sql, new { IdVenta = idVenta });
@@ -90,9 +89,14 @@ namespace POS.Data.Repositories
         /// </summary>
         public IEnumerable<DetalleVenta> ObtenerDetallesPorVentaId(string idVenta)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
-                var sql = "SELECT id_detalle AS IdDetalle, id_venta AS IdVenta, id_producto AS IdProducto, cantidad, precio_unitario AS PrecioUnitario, subtotal FROM Detalles_Venta WHERE id_venta = @IdVenta";
+                var sql = @"SELECT d.id_detalle AS IdDetalle, d.id_venta AS IdVenta, d.id_producto AS IdProducto, 
+                                   d.cantidad, d.precio_unitario AS PrecioUnitario, d.subtotal, 
+                                   p.descripcion AS Descripcion
+                            FROM Detalles_Venta d
+                            INNER JOIN Productos p ON p.id_producto = d.id_producto
+                            WHERE d.id_venta = @IdVenta";
                 return connection.Query<DetalleVenta>(sql, new { IdVenta = idVenta });
             }
         }
@@ -103,7 +107,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public IEnumerable<Venta> ObtenerVentasPorRangoFechas(string fechaInicio, string fechaFin)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = @"SELECT id_venta AS IdVenta, folio, fecha_hora AS FechaHora, total, 
                                    metodo_pago AS MetodoPago, id_usuario AS IdUsuario
@@ -119,22 +123,10 @@ namespace POS.Data.Repositories
         /// </summary>
         public Venta? ObtenerVentaPorFolio(int folio)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "SELECT id_venta AS IdVenta, folio, fecha_hora AS FechaHora, total, metodo_pago AS MetodoPago, id_usuario AS IdUsuario FROM Ventas WHERE folio = @Folio";
                 return connection.QueryFirstOrDefault<Venta>(sql, new { Folio = folio });
-            }
-        }
-
-        /// <summary>
-        /// Obtiene el nombre completo del usuario a partir de su Id.
-        /// </summary>
-        public string? ObtenerNombreUsuario(string idUsuario)
-        {
-            using (var connection = new SqliteConnection(_connectionString))
-            {
-                var sql = "SELECT nombre_completo FROM Usuarios WHERE id_usuario = @IdUsuario";
-                return connection.QueryFirstOrDefault<string>(sql, new { IdUsuario = idUsuario });
             }
         }
     }

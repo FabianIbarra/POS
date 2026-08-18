@@ -5,11 +5,14 @@ Sistema de Punto de Venta (POS) de escritorio para tiendas minoristas. Este sist
 ### ✅ Características Principales
 
 *   **Arquitectura Base y Capa de Datos:** Estructura de carpetas establecida, modelos de dominio creados, repositorios base con Dapper implementados (con soporte para "Soft Delete") y repositorio transaccional configurado.
-*   **Servicios Base y Autenticación:** `TimeService` implementado para forzar la hora MST, `AuthService` (junto con su interfaz `IAuthService`) con validación de contraseñas mediante BCrypt, y `LoginViewModel` configurado.
+*   **Servicios Base y Autenticación:** `TimeService` implementado para forzar la hora MST, `AuthService` con validación de contraseñas mediante BCrypt, y `LoginViewModel` configurado.
 *   **Enrutamiento y Navegación Principal:** Contenedor principal (`MainViewModel` + `MainView`) con control de accesos por rol (Cajero vs Administrador) y menú lateral dinámico mediante *DataBinding*.
 *   **Módulo de Inventario y Catálogos:** CRUD de productos y categorías (`InventarioViewModel` e `InventarioControl`) implementado con validación de margen de ganancias (`precio_venta` > `precio_compra`) y buscador interactivo.
 *   **Módulo de Punto de Venta:** Carrito de compras con cálculo en tiempo real de Subtotal (sin IVA), IVA y Total. Edición dinámica de cantidades, eliminación de renglones, modal de cobro con cálculo de cambio, y atajos de teclado extendidos.
+*   **Módulo de Usuarios:** CRUD de usuarios con asignación de rol (Administrador/Cajero), edición y eliminación. Restringe la visibilidad de los módulos según el rol autenticado.
 *   **Reportes:** Consultas de datos históricos por rango de fechas y número de folio. Vista de reportes con detalle de ventas, panel lateral de productos vendidos y resumen de ingresos totales.
+*   **Inicialización Automática de la Base de Datos:** `DatabaseInitializer` crea el esquema de forma idempotente al arrancar, y `SeedAdmin` siembra un usuario administrador por defecto si la tabla de usuarios está vacía.
+*   **Manejo Global de Errores:** Las excepciones no controladas se registran en `Logs/app.log` mediante `LogService` y se notifican al usuario sin interrumpir la aplicación.
 
 ---
 
@@ -25,6 +28,7 @@ El proyecto es un monolito modular que sigue una arquitectura **MVVM (Model-View
 *   **Seguridad:** Encriptación de contraseñas usando `BCrypt.Net-Next`.
 *   **Navegación:** Sistema de `DataTemplates` en `MainView` que asocia cada `ViewModel` con su `UserControl` correspondiente.
 *   **Idioma:** Forzado a `es-MX` en `App.xaml.cs:OnStartup`. Zona horaria forzada a `America/Mazatlan` vía `TimeService`.
+*   **Arranque:** `App.xaml.cs:OnStartup` registra los manejadores globales de excepción, fuerza la cultura `es-MX` antes de crear la primera ventana, inicializa el esquema de la base de datos (`DatabaseInitializer`) y siembra el administrador por defecto (`SeedAdmin`).
 
 ---
 
@@ -44,44 +48,49 @@ A continuación, se detalla la estructura del proyecto principal (`POS`):
 
 ```plaintext
 POS/
- ├── Data/
- │   └── Repositories/       # Capa de persistencia (Dapper + SQLite)
- │       ├── CategoriaRepository.cs
- │       ├── ProductoRepository.cs
- │       ├── UsuarioRepository.cs
- │       └── VentaRepository.cs
- ├── Helpers/                # Convertidores XAML y utilidades
- │   └── NotBooleanConverter.cs
- ├── Models/                 # Entidades de dominio
- │       ├── Categoria.cs
- │       ├── DetalleVenta.cs
- │       ├── Producto.cs
- │       ├── Usuario.cs
- │       └── Venta.cs
- ├── Services/               # Lógica de negocio pura
- │       ├── AuthService.cs
- │       ├── IAuthService.cs
- │       └── TimeService.cs
- ├── ViewModels/             # Clases de estado de vista (CommunityToolkit.Mvvm)
- │       ├── CobroViewModel.cs
- │       ├── InventarioViewModel.cs
- │       ├── LoginViewModel.cs
- │       ├── MainViewModel.cs
- │       ├── POSViewModel.cs
- │       └── ReportesViewModel.cs
- ├── Views/                  # Interfaces de usuario (XAML)
- │       ├── CobroView.xaml / .cs
- │       ├── InventarioView.xaml / .cs
- │       ├── InventarioControl.xaml / .cs
- │       ├── LoginView.xaml / .cs
- │       ├── MainView.xaml / .cs
- │       ├── POSView.xaml / .cs
- │       ├── POSControl.xaml / .cs
- │       └── ReportesControl.xaml / .cs
- ├── App.xaml                # Configuración global y recursos
- ├── App.xaml.cs             # Forzado de cultura y arranque
- ├── TablasPOS.sql           # Esquema de base de datos
- └── POS.db                  # Archivo local de base de datos SQLite
+  ├── Data/                    # Inicialización y persistencia (Dapper + SQLite)
+  │   ├── DatabaseInitializer.cs
+  │   └── Repositories/
+  │       ├── BaseRepository.cs
+  │       ├── CategoriaRepository.cs
+  │       ├── ProductoRepository.cs
+  │       ├── UsuarioRepository.cs
+  │       └── VentaRepository.cs
+  ├── Helpers/                 # Convertidores XAML y utilidades
+  │   ├── NotBooleanConverter.cs
+  │   └── UsuarioInputHelper.cs
+  ├── Models/                  # Entidades de dominio
+  │   ├── Categoria.cs
+  │   ├── DetalleVenta.cs
+  │   ├── Producto.cs
+  │   ├── Usuario.cs
+  │   └── Venta.cs
+  ├── Services/                # Lógica de negocio pura
+  │   ├── AuthService.cs
+  │   ├── LogService.cs
+  │   └── TimeService.cs
+  ├── Themes/                  # Diccionarios de recursos XAML (colores, tipografía, botones, etc.)
+  ├── ViewModels/              # Clases de estado de vista (CommunityToolkit.Mvvm)
+  │   ├── CobroViewModel.cs
+  │   ├── InventarioViewModel.cs
+  │   ├── LoginViewModel.cs
+  │   ├── MainViewModel.cs
+  │   ├── POSViewModel.cs
+  │   ├── ReportesViewModel.cs
+  │   └── UsuariosViewModel.cs
+  ├── Views/                   # Interfaces de usuario (XAML)
+  │   ├── CobroView.xaml / .cs
+  │   ├── InventarioControl.xaml / .cs
+  │   ├── LoginView.xaml / .cs
+  │   ├── MainView.xaml / .cs
+  │   ├── POSControl.xaml / .cs
+  │   ├── ReportesControl.xaml / .cs
+  │   └── UsuariosControl.xaml / .cs
+  ├── App.xaml                 # Configuración global y recursos
+  ├── App.xaml.cs              # Cultura, manejo de excepciones, arranque y seeds
+  ├── SeedAdmin.cs             # Usuario administrador por defecto (primer arranque)
+  ├── TablasPOS.sql            # Esquema de base de datos
+  └── POS.db                   # Archivo local de base de datos SQLite
 ```
 
 ---
@@ -109,7 +118,11 @@ dotnet run --project POS/POS.csproj
 
 * **Inicio de Sesión:** Al abrir la aplicación, el foco se coloca automáticamente en el campo de usuario. Al presionar Enter se salta al campo de contraseña, y al presionar Enter de nuevo se ejecuta el inicio de sesión. El sistema restringe accesos según el rol:
     * **Cajero:** Solo puede acceder al módulo de Punto de Venta.
-    * **Administrador:** Accede a Punto de Venta, Inventario y Reportes.
+    * **Administrador:** Accede a Punto de Venta, Inventario, Reportes y Usuarios.
+
+> **Primer Arranque:** Si la tabla de usuarios está vacía, se crea automáticamente el usuario `admin` con contraseña `admin123` (rol Administrador). Es recomendable cambiar esta contraseña después del primer inicio de sesión.
+
+* **Validación del campo de usuario:** El nombre de usuario solo admite letras, números, puntos y guiones (sin espacios). Los caracteres no permitidos se bloquean tanto al escribir como al pegar.
 
 * **Punto de Venta:** Optimizado para uso con teclado y lector de códigos de barras.
 
@@ -128,6 +141,8 @@ dotnet run --project POS/POS.csproj
 * **Inventario:** CRUD de productos y categorías. Validación estricta de que `precio_venta` sea mayor a `precio_compra`. Los productos se eliminan de manera lógica (soft delete).
 
 * **Reportes:** Consultas por rango de fechas o número de folio. Muestra un listado de ventas con su detalle, e incluye un panel de resumen con el total de ingresos del periodo seleccionado.
+
+* **Usuarios:** CRUD de usuarios con selección de rol (Administrador/Cajero). Permite guardar, editar y eliminar usuarios; el módulo solo está disponible para el rol Administrador.
 
 ---
 

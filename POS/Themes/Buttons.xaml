@@ -1,0 +1,262 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  Plantilla base para botones con esquinas redondeadas  -->
+    <ControlTemplate
+        x:Key="RoundedButtonTemplate"
+        TargetType="Button">
+        <Border
+            x:Name="BtnBorder"
+            Background="{TemplateBinding Background}"
+            CornerRadius="6"
+            RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <ScaleTransform x:Name="BtnScale" ScaleX="1" ScaleY="1" />
+            </Border.RenderTransform>
+            <ContentPresenter
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                RecognizesAccessKey="True" />
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsPressed" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="BtnScale"
+                                Storyboard.TargetProperty="ScaleX"
+                                Duration="0:0:0.08"
+                                To="0.97" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BtnScale"
+                                Storyboard.TargetProperty="ScaleY"
+                                Duration="0:0:0.08"
+                                To="0.97" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="BtnScale"
+                                Storyboard.TargetProperty="ScaleX"
+                                Duration="0:0:0.12"
+                                To="1" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BtnScale"
+                                Storyboard.TargetProperty="ScaleY"
+                                Duration="0:0:0.12"
+                                To="1" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.45" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--  Botón base: color primario, define dimensiones y tipografía común  -->
+    <Style x:Key="BaseButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource TextOnDarkBrush}" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="16,8" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Template" Value="{StaticResource RoundedButtonTemplate}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource PrimaryPressedBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Botón primario (acción principal)  -->
+    <Style
+        x:Key="PrimaryButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button" />
+
+    <!--  Botón de éxito (confirmar, cobrar, guardar)  -->
+    <Style
+        x:Key="SuccessButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource SuccessBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource SuccessHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource SuccessPressedBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Botón de peligro (cancelar, eliminar)  -->
+    <Style
+        x:Key="DangerButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource DangerBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource DangerHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource DangerPressedBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Botón informativo (acciones secundarias azules)  -->
+    <Style
+        x:Key="InfoButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource InfoBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource InfoHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource InfoPressedBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Botón de advertencia (reportes, folio)  -->
+    <Style
+        x:Key="WarningButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource WarningBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource WarningHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource WarningPressedBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Botón neutro (limpiar formulario)  -->
+    <Style
+        x:Key="NeutralButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource NeutralBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource NeutralHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource NeutralPressedBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Botón de menú lateral (navegación)  -->
+    <Style x:Key="MenuButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource TextSidebarInactiveBrush}" />
+        <Setter Property="Height" Value="50" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}">
+                        <Grid>
+                            <Border
+                                x:Name="Indicator"
+                                Width="4"
+                                HorizontalAlignment="Left"
+                                Background="{StaticResource PrimaryBrush}"
+                                Visibility="Hidden" />
+                            <ContentPresenter
+                                Margin="20,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{StaticResource SidebarHoverBrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource TextOnDarkBrush}" />
+                            <Setter TargetName="Indicator" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{StaticResource SidebarDarkBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  Botón de cerrar sesión  -->
+    <Style
+        x:Key="LogoutButtonStyle"
+        BasedOn="{StaticResource DangerButtonStyle}"
+        TargetType="Button">
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <!--  Botón compacto para celdas de tabla  -->
+    <Style
+        x:Key="ActionButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Padding" Value="12,2" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <!--  Botón compacto de edición  -->
+    <Style
+        x:Key="EditButtonStyle"
+        BasedOn="{StaticResource ActionButtonStyle}"
+        TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource InfoBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource InfoHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource InfoPressedBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Botón compacto de eliminación  -->
+    <Style
+        x:Key="DeleteButtonStyle"
+        BasedOn="{StaticResource ActionButtonStyle}"
+        TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource DangerBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource DangerHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{StaticResource DangerPressedBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

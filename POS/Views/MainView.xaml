@@ -7,14 +7,11 @@
     Title="Sistema POS - Principal"
     Width="1200"
     Height="800"
-    Background="#F5F5F5"
+    Background="{StaticResource AppBackgroundBrush}"
     Icon="/POSLogo.png"
     WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
-        <!--  Convertidor para ocultar/mostrar elementos según el rol  -->
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-
         <!--  Mapeo de ViewModels a Views (UserControls)  -->
         <DataTemplate DataType="{x:Type vm:POSViewModel}">
             <views:POSControl />
@@ -28,64 +25,6 @@
         <DataTemplate DataType="{x:Type vm:UsuariosViewModel}">
             <views:UsuariosControl />
         </DataTemplate>
-
-        <!--  ESTILO REUTILIZABLE PARA BOTONES DEL MENÚ LATERAL  -->
-        <Style x:Key="MenuButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="#BDC3C7" />
-            <Setter Property="Height" Value="50" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}">
-                            <Grid>
-                                <!--  Indicador lateral azul que aparece en Hover  -->
-                                <Border
-                                    x:Name="Indicator"
-                                    Width="4"
-                                    HorizontalAlignment="Left"
-                                    Background="#3498DB"
-                                    Visibility="Hidden" />
-
-                                <ContentPresenter
-                                    Margin="20,0,0,0"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center" />
-                            </Grid>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#34495E" />
-                                <Setter Property="Foreground" Value="White" />
-                                <Setter TargetName="Indicator" Property="Visibility" Value="Visible" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--  ESTILO PARA EL BOTÓN DE CERRAR SESIÓN  -->
-        <Style x:Key="LogoutButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#E74C3C" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="5">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#C0392B" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </Window.Resources>
 
     <Grid>
@@ -94,11 +33,11 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!--  Sidebar con sombra  -->
+        <!--  Barra lateral  -->
         <Border
             Grid.Column="0"
             Panel.ZIndex="1"
-            Background="#2C3E50">
+            Background="{StaticResource SidebarBrush}">
             <Border.Effect>
                 <DropShadowEffect
                     BlurRadius="10"
@@ -121,12 +60,12 @@
                     <TextBlock
                         FontSize="24"
                         FontWeight="Bold"
-                        Foreground="White"
+                        Foreground="{StaticResource TextOnDarkBrush}"
                         Text="Sistema POS" />
                     <TextBlock
                         Margin="0,5,0,0"
                         FontSize="11"
-                        Foreground="#95A5A6"
+                        Foreground="{StaticResource TextSidebarMutedBrush}"
                         Text="Administración de Ventas" />
                 </StackPanel>
 
@@ -135,58 +74,51 @@
                     Grid.Row="1"
                     Margin="15,0,15,30"
                     Padding="15,10"
-                    Background="#1A252F"
+                    Background="{StaticResource SidebarDarkBrush}"
                     CornerRadius="8">
                     <StackPanel>
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
-                            Foreground="White"
+                            Foreground="{StaticResource TextOnDarkBrush}"
                             Text="{Binding NombreUsuario}"
                             TextTrimming="CharacterEllipsis" />
                         <TextBlock
                             Margin="0,4,0,0"
                             FontSize="12"
                             FontWeight="Medium"
-                            Foreground="#3498DB"
+                            Foreground="{StaticResource PrimaryBrush}"
                             Text="{Binding RolUsuario}" />
                     </StackPanel>
                 </Border>
 
-                <!--  Botones de Navegación  -->
+                <!--  Navegación  -->
                 <StackPanel Grid.Row="2" VerticalAlignment="Top">
-
-                    <!--  POS  -->
                     <Button Command="{Binding IrAPOSCommand}" Style="{StaticResource MenuButtonStyle}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock
                                 Margin="0,0,12,0"
                                 FontSize="16"
                                 FontWeight="Bold"
-                                Text="▪" />
-                            <TextBlock
-                                FontSize="14"
-                                FontWeight="Medium"
-                                Text="Punto de Venta" />
+                                Text="|" />
+                            <TextBlock Text="Punto de Venta" />
                         </StackPanel>
                     </Button>
 
-                    <!--  Inventario  -->
-                    <Button Command="{Binding IrAInventarioCommand}" Style="{StaticResource MenuButtonStyle}">
+                    <Button
+                        Command="{Binding IrAInventarioCommand}"
+                        Style="{StaticResource MenuButtonStyle}"
+                        Visibility="{Binding EsAdministrador, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock
                                 Margin="0,0,12,0"
                                 FontSize="16"
                                 FontWeight="Bold"
-                                Text="▪" />
-                            <TextBlock
-                                FontSize="14"
-                                FontWeight="Medium"
-                                Text="Inventario" />
+                                Text="|" />
+                            <TextBlock Text="Inventario" />
                         </StackPanel>
                     </Button>
 
-                    <!--  Reportes (solo para Administrador)  -->
                     <Button
                         Command="{Binding IrAReportesCommand}"
                         Style="{StaticResource MenuButtonStyle}"
@@ -196,15 +128,11 @@
                                 Margin="0,0,12,0"
                                 FontSize="16"
                                 FontWeight="Bold"
-                                Text="▪" />
-                            <TextBlock
-                                FontSize="14"
-                                FontWeight="Medium"
-                                Text="Reportes" />
+                                Text="|" />
+                            <TextBlock Text="Reportes" />
                         </StackPanel>
                     </Button>
 
-                    <!--  Usuarios (solo para Administrador)  -->
                     <Button
                         Command="{Binding IrAUsuariosCommand}"
                         Style="{StaticResource MenuButtonStyle}"
@@ -214,14 +142,10 @@
                                 Margin="0,0,12,0"
                                 FontSize="16"
                                 FontWeight="Bold"
-                                Text="▪" />
-                            <TextBlock
-                                FontSize="14"
-                                FontWeight="Medium"
-                                Text="Usuarios" />
+                                Text="|" />
+                            <TextBlock Text="Usuarios" />
                         </StackPanel>
                     </Button>
-
                 </StackPanel>
 
                 <!--  Cerrar Sesión  -->
@@ -231,15 +155,12 @@
                     Margin="15,0,15,20"
                     Command="{Binding CerrarSesionCommand}"
                     Content="Cerrar Sesión"
-                    Cursor="Hand"
-                    FontSize="13"
-                    FontWeight="Bold"
                     Style="{StaticResource LogoutButtonStyle}" />
             </Grid>
         </Border>
 
-        <!--  Área de Contenido Principal  -->
-        <Border Grid.Column="1" Background="#F5F5F5">
+        <!--  Área de Contenido  -->
+        <Border Grid.Column="1" Background="{StaticResource AppBackgroundBrush}">
             <ContentControl Content="{Binding CurrentViewModel}" />
         </Border>
     </Grid>

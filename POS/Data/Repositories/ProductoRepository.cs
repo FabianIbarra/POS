@@ -9,16 +9,15 @@ namespace POS.Data.Repositories
     /// Repositorio para la gestión de acceso a datos de los Productos apoyándose de Dapper.
     /// Utiliza un borrado lógico actualizando la bandera 'disponible'.
     /// </summary>
-    public class ProductoRepository
+    public class ProductoRepository : BaseRepository
     {
-        private readonly string _connectionString = "Data Source=POS.db";
 
         /// <summary>
         /// Inserta un nuevo producto en la base de datos.
         /// </summary>
         public void AgregarProducto(Producto producto)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = @"INSERT INTO Productos (id_producto, codigo_barras, descripcion, precio_compra, precio_venta, stock, disponible, id_categoria) 
                             VALUES (@IdProducto, @CodigoBarras, @Descripcion, @PrecioCompra, @PrecioVenta, @Stock, @Disponible, @IdCategoria)";
@@ -31,7 +30,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public IEnumerable<Producto> ObtenerProductosActivos()
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "SELECT id_producto AS IdProducto, codigo_barras AS CodigoBarras, descripcion, precio_compra AS PrecioCompra, precio_venta AS PrecioVenta, stock, disponible, id_categoria AS IdCategoria FROM Productos WHERE disponible = 1";
                 return connection.Query<Producto>(sql);
@@ -43,7 +42,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public Producto ObtenerProductoPorId(string idProducto)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "SELECT id_producto AS IdProducto, codigo_barras AS CodigoBarras, descripcion, precio_compra AS PrecioCompra, precio_venta AS PrecioVenta, stock, disponible, id_categoria AS IdCategoria FROM Productos WHERE id_producto = @IdProducto";
                 return connection.QueryFirstOrDefault<Producto>(sql, new { IdProducto = idProducto });
@@ -55,7 +54,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public void EditarProducto(Producto producto)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = @"UPDATE Productos SET 
                             codigo_barras = @CodigoBarras, 
@@ -75,7 +74,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public void EliminarProductoLogicamente(string idProducto)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "UPDATE Productos SET disponible = 0 WHERE id_producto = @IdProducto";
                 connection.Execute(sql, new { IdProducto = idProducto });

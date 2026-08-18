@@ -8,7 +8,7 @@ namespace POS.Services
     /// Servicio responsable de gestionar la autenticación de usuarios.
     /// Contiene la lógica para validar credenciales y almacena el estado global de la sesión.
     /// </summary>
-    public class AuthService : IAuthService
+    public class AuthService
     {
         private readonly UsuarioRepository _usuarioRepository;
 

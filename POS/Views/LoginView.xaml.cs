@@ -1,5 +1,7 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using POS.Helpers;
 using POS.ViewModels;
 
 namespace POS.Views
@@ -24,6 +26,20 @@ namespace POS.Views
 
             // Configurar el binding de la contraseña
             PasswordBox.PasswordChanged += PasswordBox_PasswordChanged;
+
+            // Enfocar el campo de usuario tras cargar la ventana.
+            // FocusManager.FocusedElement solo asigna foco lógico y no garantiza el foco de teclado,
+            // por lo que el caret y el texto no se dibujan; se fuerza el foco real con Keyboard.Focus.
+            Loaded += (_, _) => EnfocarUsuario();
+        }
+
+        /// <summary>
+        /// Asigna el foco de teclado real al campo de usuario.
+        /// </summary>
+        private void EnfocarUsuario()
+        {
+            UsernameTextBox.Focus();
+            Keyboard.Focus(UsernameTextBox);
         }
 
         /// <summary>
@@ -35,6 +51,53 @@ namespace POS.Views
             {
                 PasswordBox.Focus();
                 e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Bloquea la escritura de caracteres no permitidos en el nombre de usuario.
+        /// Solo se permiten letras, números, puntos y guiones.
+        /// </summary>
+        private void UsernameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (!UsuarioInputHelper.EsEntradaValida(e.Text))
+            {
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Bloquea el pegado de texto con caracteres no permitidos en el nombre de usuario.
+        /// </summary>
+        private void UsernameTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                var texto = (string)e.DataObject.GetData(typeof(string));
+                if (string.IsNullOrEmpty(texto) || !UsuarioInputHelper.EsEntradaValida(texto))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+
+        /// <summary>
+        /// Sanea el texto del campo de usuario por si algún carácter no permitido logra ingresarse.
+        /// </summary>
+        private void UsernameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                var textoLimpio = UsuarioInputHelper.Sanitizar(textBox.Text);
+                if (textBox.Text != textoLimpio)
+                {
+                    textBox.Text = textoLimpio;
+                    textBox.CaretIndex = textoLimpio.Length;
+                }
             }
         }
 

@@ -8,9 +8,8 @@ namespace POS.Data.Repositories
     /// <summary>
     /// Repositorio para la gestión de acceso a datos de las Categorías.
     /// </summary>
-    public class CategoriaRepository
+    public class CategoriaRepository : BaseRepository
     {
-        private readonly string _connectionString = "Data Source=POS.db";
 
         /// <summary>
         /// Inserta una nueva categoría en la base de datos de SQLite.
@@ -18,7 +17,7 @@ namespace POS.Data.Repositories
         /// <param name="categoria">El objeto categoría a insertar.</param>
         public void AgregarCategoria(Categoria categoria)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "INSERT INTO Categorias (id_categoria, nombre) VALUES (@IdCategoria, @Nombre)";
                 connection.Execute(sql, categoria);
@@ -30,7 +29,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public IEnumerable<Categoria> ObtenerCategorias()
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "SELECT id_categoria AS IdCategoria, nombre FROM Categorias";
                 return connection.Query<Categoria>(sql);
@@ -42,7 +41,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public Categoria ObtenerCategoriaPorId(string idCategoria)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "SELECT id_categoria AS IdCategoria, nombre FROM Categorias WHERE id_categoria = @IdCategoria";
                 return connection.QueryFirstOrDefault<Categoria>(sql, new { IdCategoria = idCategoria });
@@ -54,7 +53,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public void EditarCategoria(Categoria categoria)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "UPDATE Categorias SET nombre = @Nombre WHERE id_categoria = @IdCategoria";
                 connection.Execute(sql, categoria);
@@ -66,7 +65,7 @@ namespace POS.Data.Repositories
         /// </summary>
         public void EliminarCategoria(string idCategoria)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 var sql = "DELETE FROM Categorias WHERE id_categoria = @IdCategoria";
                 connection.Execute(sql, new { IdCategoria = idCategoria });
